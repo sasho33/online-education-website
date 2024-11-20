@@ -1,18 +1,21 @@
+/* General Reset */
 body {
   margin: 0;
   display: flex;
   flex-direction: column;
   min-height: 100vh; /* Ensures the body takes up at least the full height of the viewport */
+  background-color: azure;
 }
 
+/* Header Section */
 header {
-  background: linear-gradient(45deg, #28a745, #a1ffce);
+  background: linear-gradient(45deg, #229386, #a1ffce);
   color: rgb(14, 14, 14);
-
   margin-bottom: 20px;
   font-family: 'Roboto', sans-serif;
   font-size: 20px;
 }
+
 .logo {
   width: 150px;
 }
@@ -22,6 +25,13 @@ header {
   margin: 0 auto;
   max-height: 500px;
 }
+
+/* Navbar */
+.navbar {
+  width: 100%;
+}
+
+/* Content Section */
 .content {
   display: flex;
   flex-direction: column;
@@ -29,19 +39,8 @@ header {
   max-width: 800px;
   margin: 20px 0;
 }
-.footer {
-  margin-top: 20px;
-  text-align: center;
-  padding: 10px 0;
-  background: linear-gradient(45deg, #28a745, #a1ffce);
-  width: 100%;
-  font-family: 'Roboto', sans-serif;
-  font-size: 16px;
-}
 
-.subject-link {
-  margin: 10px 0;
-}
+/* Sidebar Section */
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -50,9 +49,16 @@ header {
   padding: 10px;
 }
 
+/* Subject Links and Cards */
+.subject-link {
+  margin: 10px 0;
+}
+
 .subject-card {
   transition: transform 0.2s;
+  text-align: center;
 }
+
 .subject-card:hover {
   transform: scale(1.05); /* Scale effect on hover */
 }
@@ -63,19 +69,23 @@ header {
   align-self: start;
 }
 
+/* Images */
 .card-img-top {
-  height: 100px;
-  width: 100px;
+  height: 120px;
+  width: 120px;
+  border-radius: 10%; /* Circular images */
   margin: 10px auto;
 }
-.navbar {
-  width: 100%;
+
+.student-card {
+  border-radius: 50%;
 }
 
-.subject-info {
-  width: 100%;
+.img-main-page {
+  max-width: 300px;
 }
 
+/* Calendar Section */
 #calendar {
   max-width: 800px;
   max-height: 800px;
@@ -86,12 +96,55 @@ header {
   text-align: center;
 }
 
-.card-img-top {
-  height: 120px;
-  width: 120px;
-  border-radius: 50%;
+/* Footer Section */
+.footer {
+  height: auto; /* Let the height adjust based on content */
+  padding: 20px; /* Add extra padding */
+
+  background: linear-gradient(45deg, #229386, #a1ffce);
+  font-size: 16px; /* Font size for footer text */
+  text-align: center; /* Center-align text */
+  margin-top: 20px;
 }
 
-.img-main-page {
-  max-width: 300px;
+.footer h5 {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.footer ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer ul li {
+  margin-bottom: 5px;
+}
+
+.footer ul li a {
+  text-decoration: none;
+  font-weight: 700;
+  color: rgb(14, 14, 14);
+}
+
+.footer ul li a:hover {
+  text-decoration: underline;
+}
+
+.footer .fa-lg {
+  transition: all 0.4s;
+  color: rgb(29, 29, 29);
+  opacity: 70%;
+}
+
+.footer .fa-lg:hover {
+  opacity: 100%;
+  scale: 1.1;
+}
+
+.copyright {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 20px;
+  margin-bottom: 0px;
 }
