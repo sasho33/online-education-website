@@ -1,4 +1,11 @@
-<?php include './partials/header.php'; ?>
+<?php include './partials/header.php'; 
+
+
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'student') {
+    header("Location: " . BASE_URL . "index.php");
+    exit();
+}
+?>
 
 <!-- Main Content Container -->
 <div class="container my-5">

@@ -1,16 +1,39 @@
 <?php
-
+function tt($value){
+    echo '<pre>';
+    print_r($value);
+    echo '</pre>';
+}
 // INSERT function
+function dbCheckError($stmt) {
+    if ($stmt->errorCode() !== '00000') { // If there's an error
+        $errorInfo = $stmt->errorInfo(); // Get the error information
+        // Optionally log the error, or echo it (depending on your needs)
+        echo "Database error: " . $errorInfo[2];
+    }
+}
+
 function insert($table, $data)
 {
-    global $pdo; // Access the globally defined $pdo
-    $columns = implode(", ", array_keys($data));
+    global $pdo; 
+
+        $columns = implode(", ", array_keys($data));
     $placeholders = ":" . implode(", :", array_keys($data));
     $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
-    
     $stmt = $pdo->prepare($sql);
-    return $stmt->execute($data);
+    
+    dbCheckError($stmt);
+       
+    if ($stmt->execute($data)) {
+        return true; 
+    } else {
+             $errorInfo = $stmt->errorInfo();
+        
+        echo "Error inserting data: " . $errorInfo[2];
+        return false; 
+    }
 }
+
 
 // UPDATE function
 function update($table, $data, $conditions)
@@ -26,7 +49,7 @@ function update($table, $data, $conditions)
         array_map(fn($key) => "cond_$key", array_keys($conditions)),
         array_values($conditions)
     ));
-    
+    dbCheckError($stmt);
     return $stmt->execute($params);
 }
 
@@ -50,6 +73,6 @@ function select($table, $conditions = [], $columns = "*")
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($conditions);
-    
+    dbCheckError($stmt);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

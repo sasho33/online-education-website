@@ -1,5 +1,8 @@
 <?php include $_SERVER['DOCUMENT_ROOT'] . '/online-education/config.php'; 
-include 'db/connection.php';
+include BASE_PATH.'db/connection.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 
 <!DOCTYPE html>
@@ -18,6 +21,8 @@ include 'db/connection.php';
 
     <link rel="stylesheet" href="<?=BASE_URL; ?>css/main.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" />
+    <script src="https://cdn.tiny.cloud/1/17jlypjvlumh6qwpa7amy2nqvlg3ybqgxaghl75jj8xsotpp/tinymce/7/tinymce.min.js"
+        referrerpolicy="origin"></script>
 </head>
 
 <body>
@@ -55,19 +60,31 @@ include 'db/connection.php';
                                             Development</a></li>
                                 </ul>
                             </li>
+                            <?php if (isset($_SESSION['user_id'])): ?>
                             <li class="nav-item">
-                                <a class="nav-link" href="<?=BASE_URL; ?>pages/dashboard.php"
+                                <a class="nav-link"
+                                    href="<?=BASE_URL; ?>pages/<?=$_SESSION['user_role'] === 'admin' ? 'teacher-dashboard.php' : 'dashboard.php';?>"
                                     role="button">Dashboard</a>
                             </li>
+                            <?php endif; ?>
 
                             <li class="nav-item">
-                                <button class="btn btn-sm btn-light">
+                                <a class="btn btn-sm btn-light" role="button">
                                     <i class="fa fa-headset"></i>
-                                </button>
-                                <button class="btn btn-sm btn-success login" data-bs-toggle="modal"
-                                    data-bs-target="#loginModal">
+                                </a>
+                                <!-- Login/Logout Button -->
+
+                                <?php if (isset($_SESSION['user_id'])): ?>
+
+                                <a href="<?=BASE_URL; ?>pages/logout.php" class="btn btn-sm btn-danger btn-margin"
+                                    role="button"><i class="fa fa-sign-out"></i>
+                                </a>
+                                <?php else: ?>
+                                <a href="<?=BASE_URL; ?>pages/login.php" role="button"
+                                    class="btn btn-sm btn-success login btn-margin">
                                     <i class="fa fa-key"></i>
-                                </button>
+                                </a>
+                                <?php endif; ?>
                             </li>
                         </ul>
                     </div>
@@ -75,3 +92,4 @@ include 'db/connection.php';
             </nav>
         </div>
     </header>
+    <main>
