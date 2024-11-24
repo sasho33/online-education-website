@@ -1,57 +1,38 @@
-<?php 
-include '../partials/header.php'; 
+<?php
+include '../partials/header.php';
 include '../../db/controllers/materials.php';
-include '../../db/controllers/subjects.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     header("Location: " . BASE_URL . "index.php");
     exit();
 }
 
-// Get all subjects for the dropdown
-$subjects = getAllSubjects();
-
-// Get selected subject filter
-$selectedSubjectID = isset($_GET['subject_id']) ? intval($_GET['subject_id']) : null;
-
-// Fetch materials based on subject filter
-$materials = $selectedSubjectID ? getMaterialsBySubject($selectedSubjectID) : getAllMaterials();
+$selectedSubjectID = $_GET['subject_id'] ?? null;
+$subjects = getSubjectsForDropdown();
+$materials = getAllMaterials($selectedSubjectID);
 ?>
 
 <div class="container">
     <div class="row flex-nowrap">
-        <!-- Sidebar -->
         <?php include '../partials/sidebar.php'; ?>
-
-        <!-- Content Area -->
         <div class="col-md-8 col-sm-8 col-xs-12">
             <div class="content">
-                <h3 class="teacher-dashboard-header">Modify Materials</h3>
+                <h3>Modify Materials</h3>
 
-                <!-- Add Material Button -->
-                <div class="mb-3">
-                    <a href="add-materials.php" class="btn btn-primary">
-                        <i class="fa fa-plus"></i> Add Material
-                    </a>
-                </div>
+                <a href="add-material.php" class="btn btn-primary mb-3"><i class="fa fa-plus"></i> Add Material</a>
 
-                <!-- Filter Dropdown -->
-                <div class="mb-3">
-                    <form method="GET" action="modify-materials.php">
-                        <label for="subject_filter" class="form-label">Filter by Subject</label>
-                        <select name="subject_id" id="subject_filter" class="form-select" onchange="this.form.submit()">
-                            <option value="">All Subjects</option>
-                            <?php foreach ($subjects as $subject): ?>
-                            <option value="<?= $subject['SubjectID']; ?>"
-                                <?= $selectedSubjectID == $subject['SubjectID'] ? 'selected' : ''; ?>>
+                <form method="GET" action="" class="mb-3">
+                    <label for="subject_filter">Filter by Subject</label>
+                    <select name="subject_id" id="subject_filter" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Subjects</option>
+                        <?php foreach ($subjects as $subject): ?>
+                            <option value="<?= $subject['SubjectID']; ?>" <?= $selectedSubjectID == $subject['SubjectID'] ? 'selected' : ''; ?>>
                                 <?= htmlspecialchars($subject['Name']); ?>
                             </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </form>
-                </div>
+                        <?php endforeach; ?>
+                    </select>
+                </form>
 
-                <!-- Materials Table -->
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -63,30 +44,23 @@ $materials = $selectedSubjectID ? getMaterialsBySubject($selectedSubjectID) : ge
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($materials)): ?>
-                        <?php foreach ($materials as $material): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($material['MaterialID']); ?></td>
-                            <td><?= htmlspecialchars($material['Title']); ?></td>
-                            <td><?= htmlspecialchars($material['SubjectName']); ?></td>
-                            <td><?= htmlspecialchars($material['ReleaseDate']); ?></td>
-                            <td>
-                                <a href="edit-material.php?id=<?= $material['MaterialID']; ?>"
-                                    class="btn btn-warning btn-sm">
-                                    <i class="fa fa-edit"></i>
-                                </a>
-                                <a href="?action=delete&id=<?= $material['MaterialID']; ?>"
-                                    class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Are you sure you want to delete this material?');">
-                                    <i class="fa fa-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
+                        <?php if ($materials): ?>
+                            <?php foreach ($materials as $material): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($material['MaterialID']); ?></td>
+                                    <td><?= htmlspecialchars($material['Title']); ?></td>
+                                    <td><?= htmlspecialchars($material['SubjectName']); ?></td>
+                                    <td><?= htmlspecialchars($material['ReleaseDate']); ?></td>
+                                    <td>
+                                        <a href="edit-material.php?id=<?= $material['MaterialID']; ?>" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
+                                        <a href="?action=delete&id=<?= $material['MaterialID']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');"><i class="fa fa-trash"></i></a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         <?php else: ?>
-                        <tr>
-                            <td colspan="5" class="text-center">No materials found.</td>
-                        </tr>
+                            <tr>
+                                <td colspan="5" class="text-center">No materials found.</td>
+                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -95,5 +69,4 @@ $materials = $selectedSubjectID ? getMaterialsBySubject($selectedSubjectID) : ge
     </div>
 </div>
 
-<!-- Footer -->
 <?php include '../partials/footer.php'; ?>

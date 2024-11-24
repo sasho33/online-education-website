@@ -32,24 +32,32 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
                 <?php endif; ?>
 
                 <!-- Add/Edit Subject Form -->
-                <form method="POST"
-                    action="subjects.php<?= $isEditMode ? '?action=edit&id=' . intval($_GET['id']) : ''; ?>">
-                    <?php if ($isEditMode): ?>
-                    <input type="hidden" name="subject_id" value="<?= htmlspecialchars($editSubject['SubjectID']); ?>">
-                    <?php endif; ?>
-                    <div class="mb-3">
-                        <label for="subject_name" class="form-label">Subject Name</label>
-                        <input type="text" class="form-control" id="subject_name" name="subject_name"
-                            value="<?= $isEditMode ? htmlspecialchars($editSubject['Name']) : ''; ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="subject_description" class="form-label">Subject Description</label>
-                        <textarea class="form-control" id="subject_description" name="subject_description" rows="3"
-                            required><?= $isEditMode ? htmlspecialchars($editSubject['Description']) : ''; ?></textarea>
-                    </div>
-                    <button type="submit" name="<?= $isEditMode ? 'edit_subject' : 'add_subject'; ?>"
-                        class="btn btn-primary"><?= $isEditMode ? 'Update Subject' : 'Add Subject'; ?></button>
-                </form>
+                <form method="POST" action="subjects.php<?= $isEditMode ? '?action=edit&id=' . intval($_GET['id']) : ''; ?>" enctype="multipart/form-data">
+    <?php if ($isEditMode): ?>
+    <input type="hidden" name="subject_id" value="<?= htmlspecialchars($editSubject['SubjectID']); ?>">
+    <?php endif; ?>
+    <div class="mb-3">
+        <label for="subject_name" class="form-label">Subject Name</label>
+        <input type="text" class="form-control" id="subject_name" name="subject_name"
+            value="<?= $isEditMode ? htmlspecialchars($editSubject['Name']) : ''; ?>" required>
+    </div>
+    <div class="mb-3">
+        <label for="subject_description" class="form-label">Subject Description</label>
+        <textarea class="form-control" id="subject_description" name="subject_description" rows="3"
+            required><?= $isEditMode ? htmlspecialchars($editSubject['Description']) : ''; ?></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="subject_image" class="form-label">Subject Image (Optional)</label>
+        <input type="file" class="form-control" id="subject_image" name="subject_image" accept="image/*">
+        <?php if ($isEditMode && !empty($editSubject['ImagePath'])): ?>
+            <p class="mt-2">Current Image: <img src="<?= htmlspecialchars($editSubject['ImagePath']); ?>" alt="Subject Image" style="max-height: 50px;"></p>
+        <?php endif; ?>
+    </div>
+    <button type="submit" name="<?= $isEditMode ? 'edit_subject' : 'add_subject'; ?>" class="btn btn-primary">
+        <?= $isEditMode ? 'Update Subject' : 'Add Subject'; ?>
+    </button>
+</form>
+
 
                 <?php if (!$isEditMode): ?>
                 <!-- Subject List -->
@@ -60,6 +68,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
                             <th>ID</th>
                             <th>Name</th>
                             <th>Description</th>
+                            <th>Photo</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -68,7 +77,15 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
                         <tr>
                             <td><?= htmlspecialchars($subject['SubjectID']); ?></td>
                             <td><?= htmlspecialchars($subject['Name']); ?></td>
-                            <td><?= htmlspecialchars($subject['Description']); ?></td>
+                            <td><?= htmlspecialchars(substr($subject['Description'], 0, 180)) . (strlen($subject['Description']) > 180 ? '...' : ''); ?></td>
+                            <td>
+    <?php if (!empty($subject['ImagePath'])): ?>
+        <img src="<?= htmlspecialchars($subject['ImagePath']); ?>" alt="Subject Image" style="max-height: 50px;">
+    <?php else: ?>
+        No Image
+    <?php endif; ?>
+</td>
+
                             <td>
                                 <a href="?action=edit&id=<?= $subject['SubjectID']; ?>" class="btn btn-warning btn-sm">
                                     <i class="fa fa-edit"></i>

@@ -17,8 +17,9 @@ $currentPage = basename($_SERVER['PHP_SELF']); // Get the current file name
                     <i class="fa fa-book-open"></i>Subjects
                 </a>
             </li>
+      
             <li class="nav-item">
-                <a class="nav-link <?= $currentPage === 'modify-materials.php' || $currentPage ==='add-materials.php' ? 'active' : ''; ?>"
+                <a class="nav-link <?= $currentPage === 'modify-materials.php' || $currentPage ==='add-material.php' ? 'active' : ''; ?>"
                     href="<?= BASE_URL; ?>pages/teacher/modify-materials.php">
                     <i class="fa fa-folder"></i> Materials
                 </a>

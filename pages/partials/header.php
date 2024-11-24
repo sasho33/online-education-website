@@ -1,8 +1,14 @@
 <?php include $_SERVER['DOCUMENT_ROOT'] . '/online-education/config.php'; 
 include BASE_PATH.'db/connection.php';
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+error_reporting(E_ALL); // Report all errors
+ini_set('display_errors', '0'); // Do not display errors on the front end
+ini_set('log_errors', '1'); // Log errors to a file for debugging
+ini_set('error_log', $_SERVER['DOCUMENT_ROOT'] . '/logs/php-error.log');
 ?>
 
 <!DOCTYPE html>
@@ -12,6 +18,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Online Teaching Website</title>
+    <link rel="icon" type="image/x-icon" href="<?=BASE_URL; ?>img/icons/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.css" rel="stylesheet" />
@@ -19,8 +26,9 @@ if (session_status() === PHP_SESSION_NONE) {
         integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMpQl3FY9CeeEVY/H4mxAkbFvJjfBzGH0Fw5bJ4" crossorigin="anonymous" />
 
 
-    <link rel="stylesheet" href="<?=BASE_URL; ?>css/main.css" />
+   
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" />
+    <link rel="stylesheet" href="<?=BASE_URL; ?>css/main.css" />
     <script src="https://cdn.tiny.cloud/1/17jlypjvlumh6qwpa7amy2nqvlg3ybqgxaghl75jj8xsotpp/tinymce/7/tinymce.min.js"
         referrerpolicy="origin"></script>
 </head>

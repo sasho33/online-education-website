@@ -171,7 +171,7 @@ include 'pages/partials/header.php';
                 <div class="card h-100">
                     <img src="<?=BASE_URL; ?>img/student1.webp" class="card-img-top student-card" alt="Student 1" />
                     <div class="card-body">
-                        <blockquote class="blockquote mb-0">
+                        <blockquote class="card-text">
                             <p>
                                 "The Java Programming course helped me land my first software developer job! The
                                 hands-on projects were invaluable."
@@ -185,7 +185,7 @@ include 'pages/partials/header.php';
                 <div class="card h-100">
                     <img src="<?=BASE_URL; ?>img/student2.webp" class="card-img-top student-card" alt="Student 2" />
                     <div class="card-body">
-                        <blockquote class="blockquote mb-0">
+                        <blockquote class="card-text">
                             <p>
                                 "Prof. Smith's Database Development course made me confident in SQL, and I'm now
                                 a junior data analyst."
@@ -199,7 +199,7 @@ include 'pages/partials/header.php';
                 <div class="card h-100">
                     <img src="<?=BASE_URL; ?>img/student3.webp" class="card-img-top student-card" alt="Student 3" />
                     <div class="card-body">
-                        <blockquote class="blockquote mb-0">
+                        <blockquote class="card-text">
                             <p>
                                 "Learning web development with Sarah was amazing. Now, I'm building my own
                                 websites professionally!"

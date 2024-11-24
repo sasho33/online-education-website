@@ -3,6 +3,16 @@
 // Include database connection
 include $_SERVER['DOCUMENT_ROOT'] . '/online-education/db/connection.php';
 
+function getUserByID($userID) {
+    $result = select('users', ['UserID' => $userID]);
+    return $result ? $result[0] : null;
+}
+
+// Update a user by conditions
+function updateUser($data, $conditions) {
+    return update('users', $data, $conditions);
+}
+
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
@@ -25,11 +35,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             $_SESSION['user_id'] = $user[0]['UserID'];
             $_SESSION['user_name'] = $user[0]['first_name'] . ' ' . $user[0]['last_name'];
             $_SESSION['user_role'] = $user[0]['Role'];
-
+        
             // Redirect based on role
-            header("Location: " . BASE_URL . "pages/" . ($_SESSION['user_role'] === 'admin' ? "teacher-dashboard.php" : "dashboard.php"));
-            exit();
-        } else {
+            $redirectUrl = BASE_URL . "pages/" . ($_SESSION['user_role'] === 'admin' ? "teacher-dashboard.php" : "dashboard.php");
+            echo "<script>window.location.href = '$redirectUrl';</script>";
+            exit;
+        }
+         else {
             $errors[] = "Invalid email or password.";
         }
     }
@@ -89,7 +101,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
         // Check if the result is successful
         if ($result) {
             // Registration successful, redirect to login page
-            header("Location: " . BASE_URL . "pages/login.php");
+            echo "<script>
+               window.location.href = '" . BASE_URL . "pages/login.php';
+            </script>";
             exit();
         } else {
             // Insert failed
@@ -189,6 +203,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_student'])) {
+    $id = $_POST['UserID'];
     $first_name = trim($_POST['first_name']);
     $last_name = trim($_POST['last_name']);
     $email = trim($_POST['email']);

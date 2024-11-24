@@ -13,20 +13,20 @@
 // // Load header and footer into their respective placeholders
 // loadHTML('../pages/header.html', 'header-placeholder');
 // loadHTML('../pages/footer.html', 'footer-placeholder');
-
 document.addEventListener('DOMContentLoaded', async function () {
   const calendarEl = document.getElementById('calendar');
   const events = [];
 
   try {
-    const response = await fetch('../../db/controllers/get-assignments.php');
+    // Construct the URL using the root path
+    const response = await fetch('/online-education/db/controllers/get-assignments.php');
     const assignments = await response.json();
 
     assignments.forEach((assignment) => {
       events.push({
         title: assignment.Title,
         start: assignment.DueDate,
-        color: '#007bff', // Bootstrap primary color
+        color: assignment.Color, // Bootstrap primary color
       });
     });
   } catch (error) {
@@ -57,16 +57,15 @@ function displaySelectedFiles(input, targetId) {
     removeButton.textContent = 'Remove';
 
     removeButton.addEventListener('click', () => {
-      files.splice(index, 1);
+      // Remove file from the list
       const dataTransfer = new DataTransfer();
+      files.splice(index, 1);
       files.forEach((f) => dataTransfer.items.add(f));
-      input.files = dataTransfer.files; // Update the file input
-      displaySelectedFiles(input, targetId); // Refresh the file list
+      input.files = dataTransfer.files; // Update input files
+      displaySelectedFiles(input, targetId); // Refresh file list
     });
 
     li.appendChild(removeButton);
     fileList.appendChild(li);
   });
 }
-
-

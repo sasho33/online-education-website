@@ -45,6 +45,8 @@ $student = $student[0]; // Fetch the first (and only) row
 
                     <form method="POST" action="edit-student.php?id=<?= $id; ?>">
                         <div class="content">
+                        <input type="hidden" value="<?= htmlspecialchars($student['UserID']); ?>"
+                        name="UserID" id="UserID" >
                             <div class="mb-3">
                                 <label for="first_name" class="form-label">First Name</label>
                                 <input type="text" value="<?= htmlspecialchars($student['first_name']); ?>"

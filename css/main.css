@@ -248,7 +248,12 @@ header {
   border-bottom: 1px solid #ddd;
   padding-bottom: 5px;
 }
-
+#due_date {
+  width: 140px;
+}
+#color {
+  width: 140px;
+}
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .sidebar {
@@ -266,4 +271,3 @@ header {
     font-size: 1rem;
   }
 }
-

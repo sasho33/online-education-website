@@ -1,133 +1,187 @@
 <?php
 include $_SERVER['DOCUMENT_ROOT'] . '/online-education/db/connection.php';
 
-// Fetch all materials
-function getAllMaterials() {
-$sql = "
-SELECT m.MaterialID, m.Title, m.ReleaseDate, s.Name AS SubjectName
-FROM materials m
-LEFT JOIN subjects s ON m.SubjectID = s.SubjectID
-";
-global $pdo;
-$stmt = $pdo->query($sql);
-return $stmt->fetchAll(PDO::FETCH_ASSOC);
+$errors = [];
+
+// Fetch all materials with optional subject filter
+function getAllMaterials($subjectID = null) {
+    global $pdo;
+    $sql = "
+    SELECT m.MaterialID, m.Title, m.ReleaseDate, s.Name AS SubjectName
+    FROM materials m
+    LEFT JOIN subjects s ON m.SubjectID = s.SubjectID
+    ";
+    if ($subjectID) {
+        $sql .= " WHERE m.SubjectID = :subjectID";
+    }
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($subjectID ? ['subjectID' => $subjectID] : []);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Fetch materials by subject
-function getMaterialsBySubject($subjectID) {
-$sql = "
-SELECT m.MaterialID, m.Title, m.ReleaseDate, s.Name AS SubjectName
-FROM materials m
-LEFT JOIN subjects s ON m.SubjectID = s.SubjectID
-WHERE m.SubjectID = :subjectID
-";
-global $pdo;
-$stmt = $pdo->prepare($sql);
-$stmt->execute(['subjectID' => $subjectID]);
-return $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Fetch a single material by ID
+function getMaterialByID($materialID) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT * FROM materials WHERE MaterialID = :materialID");
+    $stmt->execute(['materialID' => $materialID]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+// Fetch associated files for a material
+function getMaterialFiles($materialID) {
+    return select('material_files', ['MaterialID' => $materialID]);
+}
 
+// Fetch all subjects for dropdown
+function getSubjectsForDropdown() {
+    return select('subjects');
+}
+
+// Save material (add or update)
+function saveMaterial($data, $materialID = null) {
+    return $materialID ? update('materials', $data, ['MaterialID' => $materialID]) : insert('materials', $data);
+}
+
+// Save uploaded files and associate them with a material
+function saveUploadedFiles($materialID, $files) {
+    $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/online-education/uploads/materials/';
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    foreach ($files['name'] as $key => $fileName) {
+        if ($files['error'][$key] === UPLOAD_ERR_OK) {
+            $tmpName = $files['tmp_name'][$key];
+            $filePath = $uploadDir . basename($fileName);
+            $webPath = '/online-education/uploads/materials/' . basename($fileName);
+
+            if (move_uploaded_file($tmpName, $filePath)) {
+                insert('material_files', [
+                    'MaterialID' => $materialID,
+                    'FilePath' => $webPath
+                ]);
+            }
+        } else {
+            global $errors;
+            $errors[] = "Failed to upload file: $fileName";
+        }
+    }
+}
+
+// Delete material and associated files
 function deleteMaterial($materialID) {
     global $pdo;
-    
-    // Begin transaction to ensure data integrity
     $pdo->beginTransaction();
-
     try {
-        // Delete associated files
         $files = select('material_files', ['MaterialID' => $materialID]);
         foreach ($files as $file) {
-            if (file_exists($file['FilePath'])) {
-                unlink($file['FilePath']); // Remove the file from the server
+            $filePath = $_SERVER['DOCUMENT_ROOT'] . $file['FilePath'];
+            if (file_exists($filePath)) {
+                unlink($filePath);
             }
         }
-        delete('material_files', ['MaterialID' => $materialID]); // Remove file records
-
-        // Delete the material record
+        delete('material_files', ['MaterialID' => $materialID]);
         delete('materials', ['MaterialID' => $materialID]);
-
-        // Commit transaction
         $pdo->commit();
-
         return true;
     } catch (Exception $e) {
-        // Rollback in case of error
         $pdo->rollBack();
         return false;
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action'], $_GET['id']) && $_GET['action'] === 'delete') {
-    $materialID = intval($_GET['id']);
-    if (deleteMaterial($materialID)) {
-        echo "<script>
-            window.location.href = '" . BASE_URL . "pages/teacher/modify-materials.php';
-        </script>";
-    } else {
-        echo "<script>
-            alert('Failed to delete material.');
-        </script>";
+// Handle GET actions (Delete)
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if (isset($_GET['action'], $_GET['id']) && $_GET['action'] === 'delete') {
+        $materialID = intval($_GET['id']);
+        if (deleteMaterial($materialID)) {
+            echo "<script>
+                
+                window.location.href = '/online-education/pages/teacher/modify-materials.php';
+            </script>";
+        } else {
+            echo "<script>
+                alert('Failed to delete material.');
+            </script>";
+        }
+        exit();
     }
 }
 
+// Handle POST actions (Add/Edit)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_material'])) {
+        $title = trim($_POST['title']);
+        $description = trim($_POST['description']);
+        $release_date = !empty($_POST['release_date']) ? $_POST['release_date'] : date('Y-m-d');
+        $subject_id = intval($_POST['subject_id']);
+        $materialID = $_POST['material_id'] ?? null;
 
-// Update material function
-function updateMaterial($materialID, $data) {
-    return update('materials', $data, ['MaterialID' => $materialID]);
+        // Validation
+        if (strlen($title) < 2) $errors[] = "Title must be at least 2 characters.";
+        if (strlen($description) < 5) $errors[] = "Description must be at least 5 characters.";
+        if (!$subject_id) $errors[] = "Subject is required.";
+
+        if (empty($errors)) {
+            $data = [
+                'Title' => $title,
+                'Description' => $description,
+                'ReleaseDate' => $release_date,
+                'SubjectID' => $subject_id,
+            ];
+
+            if (saveMaterial($data, $materialID)) {
+                // Handle file uploads
+                if (!empty($_FILES['files']['name'][0])) {
+                    $materialID = $materialID ?: $pdo->lastInsertId();
+                    saveUploadedFiles($materialID, $_FILES['files']);
+                }
+
+                echo "<script>
+                   window.location.href = '/online-education/pages/teacher/modify-materials.php';
+                </script>";
+                exit();
+            } else {
+                $errors[] = isset($materialID) ? "Failed to update material." : "Failed to add material.";
+            }
+        }
+    
 }
-
-// Fetch a single material
-function getMaterialByID($materialID) {
-    $materials = select('materials', ['MaterialID' => $materialID]);
-    return $materials[0] ?? null;
-}
-
-
-
-
-
-// Fetch subjects for dropdown
-// Delete material function
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_material'])) {
     $title = trim($_POST['title']);
     $description = trim($_POST['description']);
-    $release_date = $_POST['release_date'];
-    $subject_id = $_POST['subject_id'];
+    $release_date = !empty($_POST['release_date']) ? $_POST['release_date'] : date('Y-m-d');
+    $subject_id = intval($_POST['subject_id']);
+    $materialID = $_POST['material_id'] ?? null;
 
     // Validation
-    $errors = [];
-    if (strlen($title) < 2) {
-        $errors[] = "Title must be at least 2 characters.";
-    }
-    if (strlen($description) < 5) {
-        $errors[] = "Description must be at least 5 characters.";
-    }
+    if (strlen($title) < 2) $errors[] = "Title must be at least 2 characters.";
+    if (strlen($description) < 5) $errors[] = "Description must be at least 5 characters.";
+    if (!$subject_id) $errors[] = "Subject is required.";
 
     if (empty($errors)) {
-        // Update material in the database
         $data = [
-            'SubjectID' => $subject_id,
             'Title' => $title,
             'Description' => $description,
             'ReleaseDate' => $release_date,
+            'SubjectID' => $subject_id,
         ];
-        $result = update('materials', $data, ['MaterialID' => $materialID]);
 
-        if ($result) {
+        if (saveMaterial($data, $materialID)) {
+            // Handle file uploads
+            if (!empty($_FILES['files']['name'][0])) {
+                $materialID = $materialID ?: $pdo->lastInsertId();
+                saveUploadedFiles($materialID, $_FILES['files']);
+            }
+
             echo "<script>
-                window.location.href = '" . BASE_URL . "pages/teacher/modify-materials.php';
+               window.location.href = '/online-education/pages/teacher/modify-materials.php';
             </script>";
             exit();
         } else {
-            $errors[] = "Failed to update material.";
+            $errors[] = isset($materialID) ? "Failed to update material." : "Failed to add material.";
         }
     }
+
 }
-
-
-
-
-
 ?>
