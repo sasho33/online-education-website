@@ -3,6 +3,7 @@ include '../../db/controllers/users.php';
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     header("Location: " . BASE_URL . "index.php");
     exit();
+    
 }
 ?>
 
@@ -12,7 +13,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
         <!-- Sidebar -->
         <?php include '../partials/sidebar.php'?>
         <!-- Content Area -->
-        <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="col-lg-9 col-md-8 col-sm-10 col-xs-12">
 
             <div class="content">
                 <div class="manage-students_wraper">

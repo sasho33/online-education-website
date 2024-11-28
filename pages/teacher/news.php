@@ -14,7 +14,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
         <!-- Sidebar -->
         <?php include '../partials/sidebar.php'; ?>
         <!-- Content Area -->
-        <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="col-lg-9 col-md-8 col-sm-10 col-xs-12">
             <div class="content">
                 <div class="manage-student_wraper">
                     <h3 class="teacher-dashboard-header">News & Announcements</h3>
@@ -65,10 +65,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
                                     <small class="text-muted d-block"><?= htmlspecialchars($news['CreatedAt']); ?></small>
                                 </div>
                                 <div>
-                                    <a href="?action=edit&id=<?= $news['NewsID']; ?>" class="btn btn-sm btn-warning"> <i class="fa fa-edit"></i></a>
+                                    <a href="?action=edit&id=<?= $news['NewsID']; ?>" class="btn btn-sm btn-warning mt-1"> <i class="fa fa-edit"></i></a>
                                     <a href="?action=delete&id=<?= $news['NewsID']; ?>"
                                         onclick="return confirm('Are you sure you want to delete this news?');"
-                                        class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                                        class="btn btn-sm btn-danger mt-1"><i class="fa fa-trash"></i></a>
                                 </div>
                             </li>
                             <?php endforeach; ?>
@@ -79,6 +79,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
                 </div>
             </div>
         </div>
+    </div>
+    <div class="row">
+        <!-- Calendar Section -->
+        <?php include '../partials/teacher-calendar.php'?>
     </div>
 </div>
 

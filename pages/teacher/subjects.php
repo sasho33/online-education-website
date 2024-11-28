@@ -16,7 +16,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
         <?php include '../partials/sidebar.php'; ?>
 
         <!-- Content Area -->
-        <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="col-lg-9 col-md-8 col-sm-10 col-xs-12">
             <div class="content">
                 <h3 class="teacher-dashboard-header"><?= $isEditMode ? 'Edit Subject' : 'Manage Subjects'; ?></h3>
 
@@ -87,10 +87,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
 </td>
 
                             <td>
-                                <a href="?action=edit&id=<?= $subject['SubjectID']; ?>" class="btn btn-warning btn-sm">
+                                <a href="?action=edit&id=<?= $subject['SubjectID']; ?>" class="btn btn-warning btn-sm mt-1">
                                     <i class="fa fa-edit"></i>
                                 </a>
-                                <a href="?action=delete&id=<?= $subject['SubjectID']; ?>" class="btn btn-danger btn-sm"
+                                <a href="?action=delete&id=<?= $subject['SubjectID']; ?>" class="btn btn-danger btn-sm mt-1"
                                     onclick="return confirm('Are you sure you want to delete <?= $subject['Name']; ?>?');">
                                     <i class="fa fa-trash"></i>
                                 </a>
@@ -102,6 +102,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
                 <?php endif; ?>
             </div>
         </div>
+    </div>
+    <div class="row">
+        <!-- Calendar Section -->
+        <?php include '../partials/teacher-calendar.php'?>
     </div>
 </div>
 

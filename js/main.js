@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   calendar.render();
 });
 
+//display selected files when you add multiple files inside the material
 function displaySelectedFiles(input, targetId) {
   const fileList = document.querySelector(`#${targetId} ul`);
   fileList.innerHTML = ''; // Clear the existing list
@@ -69,3 +70,5 @@ function displaySelectedFiles(input, targetId) {
     fileList.appendChild(li);
   });
 }
+
+

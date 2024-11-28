@@ -2,6 +2,7 @@
 include '../partials/header.php';
 include $_SERVER['DOCUMENT_ROOT'] . '/online-education/db/controllers/users.php'; // Use users.php controller functions
 
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: " . BASE_URL . "index.php");
     exit();
@@ -78,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
         <!-- Sidebar -->
         <?php include '../partials/sidebar.php'; ?>
         <!-- Content Area -->
-        <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="col-lg-9 col-md-8 col-sm-10 col-xs-12">
             <div class="content">
                 <div class="manage-student_wraper">
                     <h3 class="teacher-dashboard-header">Edit Profile</h3>

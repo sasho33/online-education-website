@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_admin'])) {
         <!-- Sidebar -->
         <?php include '../partials/sidebar.php'; ?>
         <!-- Content Area -->
-        <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="col-lg-9 col-md-8 col-sm-10 col-xs-12">
             <h3>Add New Admin</h3>
             <?php if (!empty($errors)): ?>
             <div class="alert alert-danger">

@@ -26,54 +26,12 @@ if (!$admin) {
     exit();
 }
 
-$errors = [];
+
 $firstName = $admin['first_name'];
 $lastName = $admin['last_name'];
 $email = $admin['Email'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_admin'])) {
-    $firstName = trim($_POST['first_name']);
-    $lastName = trim($_POST['last_name']);
-    $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
-    $confirmPassword = trim($_POST['confirm_password']);
 
-    // Validation
-    if (strlen($firstName) < 2) {
-        $errors[] = "First name must be at least 2 characters.";
-    }
-    if (strlen($lastName) < 2) {
-        $errors[] = "Last name must be at least 2 characters.";
-    }
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Invalid email format.";
-    }
-    if (!empty($password) && $password !== $confirmPassword) {
-        $errors[] = "Passwords do not match.";
-    }
-
-    if (empty($errors)) {
-        $data = [
-            'first_name' => $firstName,
-            'last_name' => $lastName,
-            'Email' => $email,
-        ];
-
-        if (!empty($password)) {
-            $data['Password'] = password_hash($password, PASSWORD_BCRYPT);
-        }
-
-        if (updateAdmin($data, ['UserID' => $adminID])) {
-            echo "<script>
-                alert('Admin updated successfully.');
-                window.location.href = '" . BASE_URL . "pages/teacher/manage-teachers.php';
-            </script>";
-            exit();
-        } else {
-            $errors[] = "Failed to update admin. Please try again.";
-        }
-    }
-}
 ?>
 
 <div class="container">
@@ -81,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_admin'])) {
         <!-- Sidebar -->
         <?php include '../partials/sidebar.php'; ?>
         <!-- Content Area -->
-        <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="col-lg-9 col-md-8 col-sm-10 col-xs-12">
             <h3>Edit Admin</h3>
             <?php if (!empty($errors)): ?>
             <div class="alert alert-danger">

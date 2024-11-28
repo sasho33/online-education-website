@@ -30,7 +30,7 @@ $files = getMaterialFiles($materialID);
         <?php include '../partials/sidebar.php'; ?>
         
         <!-- Content Area -->
-        <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="col-lg-9 col-md-8 col-sm-10 col-xs-12">
             <div class="content">
                 <h3>Edit Material</h3>
 

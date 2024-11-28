@@ -29,7 +29,7 @@ $student = $student[0]; // Fetch the first (and only) row
         <?php include '../partials/sidebar.php'; ?>
 
         <!-- Content Area -->
-        <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="col-lg-9 col-md-8 col-sm-10 col-xs-12">
             <div class="content">
                 <div class="manage-students_wraper">
                     <h3 class="teacher-dashboard-header">Edit Student</h3>

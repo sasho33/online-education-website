@@ -46,11 +46,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
                                 <td><?= htmlspecialchars($student['Email']); ?></td>
                                 <td>
                                     <a href="teacher/edit-student.php?id=<?= $student['UserID']; ?>"
-                                        class="btn btn-warning btn-sm">
+                                        class="btn btn-warning btn-sm mt-1">
                                         <i class="fa fa-edit"></i>
                                     </a>
 
-                                    <a href="?action=delete&id=<?= $student['UserID']; ?>" class="btn btn-danger btn-sm"
+                                    <a href="?action=delete&id=<?= $student['UserID']; ?>" class="btn btn-danger btn-sm mt-1"
                                         onclick="return confirm('Are you sure you want to delete student <?= $student['first_name'] . ' ' . $student['last_name']; ?>?');">
                                         <i class="fa fa-trash"></i> </a>
                                 </td>

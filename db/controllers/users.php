@@ -1,8 +1,8 @@
 <?php
-
 // Include database connection
 include $_SERVER['DOCUMENT_ROOT'] . '/online-education/db/connection.php';
 
+// Fetch user by ID
 function getUserByID($userID) {
     $result = select('users', ['UserID' => $userID]);
     return $result ? $result[0] : null;
@@ -13,233 +13,149 @@ function updateUser($data, $conditions) {
     return update('users', $data, $conditions);
 }
 
-$errors = [];
+// Validate user data
+function validateUser($first_name, $last_name, $email, $password = null, $confirm_password = null) {
+    $errors = [];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
-    $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
+    if (strlen($first_name) < 2) $errors[] = "First name must be at least 2 characters.";
+    if (strlen($last_name) < 2) $errors[] = "Last name must be at least 2 characters.";
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Invalid email format.";
 
-    // Validate input
+    if ($password !== null) {
+        $passwordErrors = validatePassword($password, $confirm_password);
+        $errors = array_merge($errors, $passwordErrors);
+    }
+
+    return $errors;
+}
+
+// Validate login inputs
+function validateLogin($email, $password) {
+    $errors = [];
     if (empty($email)) {
         $errors[] = "Email is required.";
     }
     if (empty($password)) {
         $errors[] = "Password is required.";
     }
+    return $errors;
+}
 
+
+// Validate password
+function validatePassword($password, $confirm_password) {
+    $errors = [];
+
+    if (strlen($password) < 4) {
+        $errors[] = "Password must be at least 4 characters.";
+    }
+    if (!preg_match('/[a-zA-Z]/', $password)) {
+        $errors[] = "Password must include at least one letter.";
+    }
+    if (!preg_match('/\d/', $password)) {
+        $errors[] = "Password must include at least one digit.";
+    }
+    if ($password !== $confirm_password) {
+        $errors[] = "Passwords do not match.";
+    }
+
+    return $errors;
+}
+
+// Redirect helper
+function redirectTo($url, $message = null) {
+    if ($message) {
+        echo "<script>alert('$message');</script>";
+    }
+    echo "<script>window.location.href = '$url';</script>";
+    exit();
+}
+
+// Handle login
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+
+    $errors = validateLogin($email, $password);
     if (empty($errors)) {
         $user = select('users', ['email' => $email]);
-
         if ($user && password_verify($password, $user[0]['Password'])) {
-            // Login successful: Store user info in session
+            // Login successful
             $_SESSION['user_id'] = $user[0]['UserID'];
             $_SESSION['user_name'] = $user[0]['first_name'] . ' ' . $user[0]['last_name'];
             $_SESSION['user_role'] = $user[0]['Role'];
-        
-            // Redirect based on role
             $redirectUrl = BASE_URL . "pages/" . ($_SESSION['user_role'] === 'admin' ? "teacher-dashboard.php" : "dashboard.php");
-            echo "<script>window.location.href = '$redirectUrl';</script>";
-            exit;
-        }
-         else {
+            redirectTo($redirectUrl);
+        } else {
             $errors[] = "Invalid email or password.";
         }
     }
-} else {
-    $email = '';
 }
 
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
+// Handle registration and adding a student
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['register']) || isset($_POST['add_student']))) {
     $first_name = trim($_POST['first_name']);
     $last_name = trim($_POST['last_name']);
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
-    $Role = isset($_POST['Role']) && $_POST['Role'] === 'admin' ? 'admin' : 'student';
+    $role = isset($_POST['Role']) && $_POST['Role'] === 'admin' ? 'admin' : 'student';
 
-    // Validation: Check first and last name length
-    if (strlen($first_name) < 2) {
-        $errors[] = "First name must be at least 2 characters.";
-    }
-    if (strlen($last_name) < 2) {
-        $errors[] = "Last name must be at least 2 characters.";
-    }
-
-    // Validation: Check if passwords match
-    if ($password !== $confirm_password) {
-        $errors[] = "Passwords do not match.";
-    }
-
-    // Validation: Check if email is already registered
-    if (empty($errors)) { // Only check email if there are no other errors
+    $errors = validateUser($first_name, $last_name, $email, $password, $confirm_password);
+    if (empty($errors)) {
         $existingUser = select('users', ['email' => $email]);
         if ($existingUser) {
             $errors[] = "Email is already registered.";
-        }
-    }
-
-    // If there are no errors, process the registration
-    if (empty($errors)) {
-        // Hash the password
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-        // Insert user into the database
-        $data = [
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-            'Email' => $email,
-            'Password' => $hashedPassword,
-            'Role' => $Role
-        ];
-        
-        // Assuming your insert function returns true if successful
-        $result = insert('users', $data);
-        
-
-        // Check if the result is successful
-        if ($result) {
-            // Registration successful, redirect to login page
-            echo "<script>
-               window.location.href = '" . BASE_URL . "pages/login.php';
-            </script>";
-            exit();
         } else {
-            // Insert failed
-            $errors[] = "Registration failed. Please try again!";
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+            $data = [
+                'first_name' => $first_name,
+                'last_name' => $last_name,
+                'Email' => $email,
+                'Password' => $hashedPassword,
+                'Role' => $role,
+            ];
+            $result = insert('users', $data);
+            $redirectUrl = isset($_POST['register']) ? BASE_URL . "pages/login.php" : BASE_URL . "pages/teacher-dashboard.php";
+            if ($result) redirectTo($redirectUrl);
+            $errors[] = "Failed to add user. Please try again.";
         }
-    }
-} else {
-    $first_name = '';
-    $last_name = '';
-    $email = '';
-}
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_student'])) {
-    $first_name = trim($_POST['first_name']);
-    $last_name = trim($_POST['last_name']);
-    $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
-    $confirm_password = trim($_POST['confirm_password']);
-    $Role = isset($_POST['Role']) && $_POST['Role'] === 'admin' ? 'admin' : 'student';
-
-    // Validation: Check first and last name length
-    if (strlen($first_name) < 2) {
-        $errors[] = "First name must be at least 2 characters.";
-    }
-    if (strlen($last_name) < 2) {
-        $errors[] = "Last name must be at least 2 characters.";
-    }
-
-    // Validation: Check if passwords match
-    if ($password !== $confirm_password) {
-        $errors[] = "Passwords do not match.";
-    }
-
-    // Validation: Check if email is already registered
-    if (empty($errors)) { // Only check email if there are no other errors
-        $existingUser = select('users', ['email' => $email]);
-        if ($existingUser) {
-            $errors[] = "Email is already registered.";
-        }
-    }
-
-    // If there are no errors, process the registration
-    if (empty($errors)) {
-        // Hash the password
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-        // Insert user into the database
-        $data = [
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-            'Email' => $email,
-            'Password' => $hashedPassword,
-            'Role' => $Role
-        ];
-        
-        // Assuming your insert function returns true if successful
-        $result = insert('users', $data);
-        
-
-        // Check if the result is successful
-        if ($result) {
-            echo "<script>
-            window.location.href = '" . BASE_URL . "pages/teacher-dashboard.php';
-        </script>";
-        exit();
-        } else {
-            // Insert failed
-            $errors[] = "Registration failed. Please try again!";
-        }
-    }
-} else {
-    $first_name = '';
-    $last_name = '';
-    $email = '';
-}
-
-
-if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
-    $studentId = intval($_GET['id']); 
-
-    // Use the delete function to remove the student
-    $result = delete('users', ['UserID' => $studentId]);
-
-    if ($result) {
-        echo "<script>
-            
-            window.location.href = '" . BASE_URL . "pages/teacher-dashboard.php';
-        </script>";
-    } else {
-        echo "<script>
-            alert('Failed to delete the student. Please try again.');
-        </script>";
     }
 }
 
-
-
+// Handle profile update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_student'])) {
     $id = $_POST['UserID'];
     $first_name = trim($_POST['first_name']);
     $last_name = trim($_POST['last_name']);
     $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+    $confirm_password = trim($_POST['confirm_password']);
 
-    // Validation
-    if (strlen($first_name) < 2) {
-        $errors[] = "First name must be at least 2 characters.";
-    }
-    if (strlen($last_name) < 2) {
-        $errors[] = "Last name must be at least 2 characters.";
-    }
-    if (empty($email)) {
-        $errors[] = "Email is required.";
-    }
-
+    $errors = validateUser($first_name, $last_name, $email, $password, $confirm_password);
     if (empty($errors)) {
-        // Update the student
         $data = [
             'first_name' => $first_name,
             'last_name' => $last_name,
             'Email' => $email,
         ];
-        $conditions = ['UserID' => $id];
-        $result = update('users', $data, $conditions);
-
-        if ($result) {
-            echo "<script>
-               window.location.href = '" . BASE_URL . "pages/teacher-dashboard.php';
-            </script>";
-            exit();
+        if (!empty($password)) {
+            $data['Password'] = password_hash($password, PASSWORD_BCRYPT);
+        }
+        if (updateUser($data, ['UserID' => $id])) {
+            redirectTo(BASE_URL . "pages/teacher-dashboard.php", "Profile updated successfully.");
         } else {
-            $errors[] = "Failed to update student. Please try again.";
+            $errors[] = "Failed to update profile. Please try again.";
         }
     }
 }
 
-
-
-?>
+// Handle deletion
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
+    $studentId = intval($_GET['id']);
+    if (delete('users', ['UserID' => $studentId])) {
+        redirectTo(BASE_URL . "pages/teacher-dashboard.php", "User deleted successfully.");
+    } else {
+        $errors[] = "Failed to delete the user.";
+    }
+}

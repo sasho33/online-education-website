@@ -271,3 +271,15 @@ header {
     font-size: 1rem;
   }
 }
+
+.edit-dropdown {
+  white-space: nowrap;
+}
+
+.edit-line {
+  gap: 8px; /* Adjusts the spacing between elements */
+}
+
+.inside-table {
+  border-bottom: #ddd 1px solid;
+}

@@ -16,7 +16,7 @@ $assignments = getAllAssignments();
         <!-- Sidebar -->
         <?php include '../partials/sidebar.php' ?>
         <!-- Content Area -->
-        <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="col-lg-9 col-md-8 col-sm-10 col-xs-12">
 
             <div class="content">
                 <h3>Create Assignment</h3>
@@ -81,8 +81,8 @@ $assignments = getAllAssignments();
             <span style="display: inline-block; width: 20px; height: 20px; background-color: <?= htmlspecialchars($assignment['Color']); ?>;"></span>
         </td>
         <td>
-            <a href="?action=edit&id=<?= $assignment['AssignmentID']; ?>" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
-            <a href="?action=delete&id=<?= $assignment['AssignmentID']; ?>" class="btn btn-sm btn-danger"
+            <a href="?action=edit&id=<?= $assignment['AssignmentID']; ?>" class="btn btn-sm btn-warning mt-1"><i class="fa fa-edit"></i></a>
+            <a href="?action=delete&id=<?= $assignment['AssignmentID']; ?>" class="btn btn-sm btn-danger mt-1"
                 onclick="return confirm('Are you sure you want to delete this assignment?');"><i class="fa fa-trash"></i></a>
         </td>
     </tr>

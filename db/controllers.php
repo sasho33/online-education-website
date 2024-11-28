@@ -3,6 +3,7 @@ function tt($value){
     echo '<pre>';
     print_r($value);
     echo '</pre>';
+    exit();
 }
 // INSERT function
 function dbCheckError($stmt) {
@@ -22,7 +23,7 @@ function insert($table, $data)
     $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
     $stmt = $pdo->prepare($sql);
     
-    dbCheckError($stmt);
+    // dbCheckError($stmt);
        
     if ($stmt->execute($data)) {
         return true; 
@@ -49,7 +50,7 @@ function update($table, $data, $conditions)
         array_map(fn($key) => "cond_$key", array_keys($conditions)),
         array_values($conditions)
     ));
-    dbCheckError($stmt);
+    // dbCheckError($stmt);
     return $stmt->execute($params);
 }
 
@@ -73,6 +74,6 @@ function select($table, $conditions = [], $columns = "*")
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($conditions);
-    dbCheckError($stmt);
+    // dbCheckError($stmt);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
