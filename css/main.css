@@ -42,6 +42,12 @@ header {
 .navbar {
   width: 100%;
 }
+.nav-link {
+  padding-left: 5px !important;
+}
+.navbar-nav .active {
+  background-color: #229386 !important; /* Using !important to override Bootstrap styles */
+}
 
 /* Content Section */
 .content {
@@ -282,4 +288,14 @@ header {
 
 .inside-table {
   border-bottom: #ddd 1px solid;
+}
+
+.student-menu-item {
+  border-radius: 5px !important;
+  transition: all 0.3s ease;
+}
+
+.student-menu-item:hover {
+  background-color: #dcdbdb !important;
+  scale: 1.01;
 }
