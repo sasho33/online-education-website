@@ -1,9 +1,10 @@
 <?php
-include '../connection.php';
+
 
 
 // Fetch all modules with students
-function getAllModulesWithStudents() {
+function getAllModulesWithStudents()
+{
     global $pdo;
 
     // Fetch modules with head teacher
@@ -53,7 +54,8 @@ function getAllModulesWithStudents() {
 
 
 // Fetch all modules
-function getAllModules() {
+function getAllModules()
+{
     global $pdo;
     $sql = "
         SELECT m.ModuleID, m.Name, m.Description, 
@@ -65,28 +67,32 @@ function getAllModules() {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 // Fetch all subjects
-function getAllSubjects() {
+function getAllSubjects()
+{
     global $pdo;
     $stmt = $pdo->query("SELECT * FROM subjects");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // Fetch all teachers
-function getAllTeachers() {
+function getAllTeachers()
+{
     global $pdo;
     $stmt = $pdo->query("SELECT UserID, first_name, last_name FROM users WHERE Role = 'admin'");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // Fetch all students
-function getAllStudents() {
+function getAllStudents()
+{
     global $pdo;
     $stmt = $pdo->query("SELECT UserID, first_name, last_name FROM users WHERE Role = 'student'");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // Fetch students not enrolled in any module
-function getUnenrolledStudents() {
+function getUnenrolledStudents()
+{
     global $pdo;
 
     $sql = "
@@ -99,7 +105,8 @@ function getUnenrolledStudents() {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function getStudentsByModule($moduleID) {
+function getStudentsByModule($moduleID)
+{
     global $pdo;
 
     $sql = "
@@ -113,7 +120,8 @@ function getStudentsByModule($moduleID) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function getSubjectsByModule($moduleID) {
+function getSubjectsByModule($moduleID)
+{
     global $pdo;
 
     $sql = "
@@ -128,7 +136,8 @@ function getSubjectsByModule($moduleID) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function getModuleByID($moduleID) {
+function getModuleByID($moduleID)
+{
     global $pdo;
 
     $sql = "
@@ -182,20 +191,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_module'])) {
                 'head_teacher_id' => $headTeacherID,
             ]);
             $moduleID = $pdo->lastInsertId();
-            
-      
-          
+
+
+
             // // Assign students
             foreach ($studentIDs as $studentID) {
                 $stmt = $pdo->prepare("UPDATE users SET ModuleID = :module_id WHERE UserID = :user_id");
-                
+
                 $stmt->execute([
                     'module_id' => $moduleID,
                     'user_id' => $studentID,
                 ]);
             }
 
-             // Assign subjects            
+            // Assign subjects            
             foreach ($subjectIDs as $subjectID) {
                 $insertSubjectSQL = "
                     INSERT INTO module_subjects (ModuleID, SubjectID) 
@@ -207,9 +216,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_module'])) {
                     'subject_id' => $subjectID,
                 ]);
             }
-           
+
             $pdo->commit();
-            
+
             echo "<script>window.location.href = '/online-education/pages/teacher/manage-modules.php';</script>";
         } catch (Exception $e) {
             $pdo->rollBack();

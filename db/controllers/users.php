@@ -3,18 +3,21 @@
 include $_SERVER['DOCUMENT_ROOT'] . '/online-education/db/connection.php';
 
 // Fetch user by ID
-function getUserByID($userID) {
+function getUserByID($userID)
+{
     $result = select('users', ['UserID' => $userID]);
     return $result ? $result[0] : null;
 }
 
 // Update a user by conditions
-function updateUser($data, $conditions) {
+function updateUser($data, $conditions)
+{
     return update('users', $data, $conditions);
 }
 
 // Validate user data
-function validateUser($first_name, $last_name, $email, $password = null, $confirm_password = null) {
+function validateUser($first_name, $last_name, $email, $password = null, $confirm_password = null)
+{
     $errors = [];
 
     if (strlen($first_name) < 2) $errors[] = "First name must be at least 2 characters.";
@@ -30,7 +33,8 @@ function validateUser($first_name, $last_name, $email, $password = null, $confir
 }
 
 // Validate login inputs
-function validateLogin($email, $password) {
+function validateLogin($email, $password)
+{
     $errors = [];
     if (empty($email)) {
         $errors[] = "Email is required.";
@@ -43,7 +47,8 @@ function validateLogin($email, $password) {
 
 
 // Validate password
-function validatePassword($password, $confirm_password) {
+function validatePassword($password, $confirm_password)
+{
     $errors = [];
 
     if (strlen($password) < 4) {
@@ -63,7 +68,8 @@ function validatePassword($password, $confirm_password) {
 }
 
 // Redirect helper
-function redirectTo($url, $message = null) {
+function redirectTo($url, $message = null)
+{
     if ($message) {
         echo "<script>alert('$message');</script>";
     }
@@ -121,6 +127,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['register']) || isset
             $errors[] = "Failed to add user. Please try again.";
         }
     }
+} else {
+    $first_name = $last_name = $email = '';
 }
 
 // Handle profile update

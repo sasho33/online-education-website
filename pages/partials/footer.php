@@ -10,9 +10,9 @@
             <div class="col-md-4">
                 <h5>Quick Links</h5>
                 <ul class="list-unstyled">
-                    <li><a href=<?=BASE_URL."index.php"?>>Home</a></li>
-                    <li><a href=<?=BASE_URL." pages/dashboard.php"?>>Dashboard</a></li>
-                    <li><a href=<?=BASE_URL."#"?>>Contact Us</a></li>
+                    <li><a href=<?= BASE_URL . "index.php" ?>>Home</a></li>
+                    <li><a href="<?= BASE_URL; ?>pages/dashboard.php">Dashboard</a></li>
+                    <li><a href=<?= BASE_URL . "#" ?>>Contact Us</a></li>
                 </ul>
             </div>
             <div class="col-md-4">
@@ -39,9 +39,9 @@
 <script src="<?= BASE_URL; ?>js/main.js"></script>
 
 <script>
-tinymce.init({
-    selector: '#description'
-});
+    tinymce.init({
+        selector: '#description'
+    });
 </script>
 </body>
 

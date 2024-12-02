@@ -7,50 +7,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     exit();
 }
 
-$errors = [];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_admin'])) {
-    $firstName = trim($_POST['first_name']);
-    $lastName = trim($_POST['last_name']);
-    $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
-    $confirmPassword = trim($_POST['confirm_password']);
-
-    // Validation
-    if (strlen($firstName) < 2) {
-        $errors[] = "First name must be at least 2 characters.";
-    }
-    if (strlen($lastName) < 2) {
-        $errors[] = "Last name must be at least 2 characters.";
-    }
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Invalid email format.";
-    }
-    if ($password !== $confirmPassword) {
-        $errors[] = "Passwords do not match.";
-    }
-
-    if (empty($errors)) {
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-        $data = [
-            'first_name' => $firstName,
-            'last_name' => $lastName,
-            'Email' => $email,
-            'Password' => $hashedPassword,
-            'Role' => 'admin',
-        ];
-
-        if (addAdmin($data)) {
-            echo "<script>
-                window.location.href = '" . BASE_URL . "pages/teacher/manage-teachers.php';
-            </script>";
-            exit();
-        } else {
-            $errors[] = "Failed to add admin. Please try again.";
-        }
-    }
-}
 ?>
 
 <div class="container">
@@ -61,27 +18,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_admin'])) {
         <div class="col-lg-9 col-md-8 col-sm-10 col-xs-12">
             <h3>Add New Admin</h3>
             <?php if (!empty($errors)): ?>
-            <div class="alert alert-danger">
-                <ul>
-                    <?php foreach ($errors as $error): ?>
-                    <li><?= htmlspecialchars($error); ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
+                <div class="alert alert-danger">
+                    <ul>
+                        <?php foreach ($errors as $error): ?>
+                            <li><?= htmlspecialchars($error); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
             <?php endif; ?>
 
             <form method="POST" action="add-admin.php">
                 <div class="mb-3">
                     <label for="first_name" class="form-label">First Name</label>
-                    <input type="text" name="first_name" id="first_name" class="form-control" required>
+                    <input type="text" name="first_name" value="<?= $firstName ?>" id="first_name" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <label for="last_name" class="form-label">Last Name</label>
-                    <input type="text" name="last_name" id="last_name" class="form-control" required>
+                    <input type="text" name="last_name" value="<?= $lastName ?>" id="last_name" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" name="email" id="email" class="form-control" required>
+                    <input type="email" name="email" value="<?= $email ?>" id="email" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>

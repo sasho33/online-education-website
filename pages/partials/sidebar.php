@@ -1,10 +1,10 @@
 <?php
-$currentPage = basename($_SERVER['PHP_SELF']); // Get the current file name
+
 ?>
 <nav class="col-lg-3 col-md-4  col-sm-2 col-xs-12 bg-light sidebar" id="sidebarMenu">
     <div class="position-sticky pt-3">
-        <h5 class="text-center">Admin Menu</h5>
-        <ul class="nav flex-column">
+        <h5 class="text-center"><span class="d-md-inline d-sm-none d-inline">Admin Menu </span><span class="d-md-none d-sm-inline d-md-none"><i class="fa fa-bars"></i></span></h5>
+        <ul class="nav flex-column menu-small">
             <li class="nav-item">
                 <a class="nav-link <?= $currentPage === 'teacher-dashboard.php' || $currentPage === 'add-student.php' ? 'active' : ''; ?>"
                     href="<?= BASE_URL; ?>pages/teacher-dashboard.php">
@@ -18,14 +18,14 @@ $currentPage = basename($_SERVER['PHP_SELF']); // Get the current file name
                 </a>
             </li>
             <li class="nav-item">
-    <a class="nav-link  <?= $currentPage === 'manage-modules.php' ? 'active' : ''; ?>" href="<?= BASE_URL ?>pages/teacher/manage-modules.php">
-        <i class="fa fa-graduation-cap"></i>
-        <span class="d-md-inline d-sm-none d-inline">Modules</span>
-    </a>
-</li>
-      
+                <a class="nav-link  <?= $currentPage === 'manage-modules.php' ? 'active' : ''; ?>" href="<?= BASE_URL ?>pages/teacher/manage-modules.php">
+                    <i class="fa fa-graduation-cap"></i>
+                    <span class="d-md-inline d-sm-none d-inline">Modules</span>
+                </a>
+            </li>
+
             <li class="nav-item">
-                <a class="nav-link <?= $currentPage === 'modify-materials.php' || $currentPage ==='add-material.php' ? 'active' : ''; ?>"
+                <a class="nav-link <?= $currentPage === 'modify-materials.php' || $currentPage === 'add-material.php' ? 'active' : ''; ?>"
                     href="<?= BASE_URL; ?>pages/teacher/modify-materials.php">
                     <i class="fa fa-folder"></i> <span class="d-md-inline d-sm-none d-inline">Materials</span>
                 </a>

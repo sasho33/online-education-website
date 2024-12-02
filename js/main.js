@@ -1,18 +1,3 @@
-// // Function to load HTML from a file and insert it into an element
-// async function loadHTML(filePath, elementId) {
-//   try {
-//     const response = await fetch(filePath);
-//     if (!response.ok) throw new Error(`Failed to load ${filePath}`);
-//     const content = await response.text();
-//     document.getElementById(elementId).innerHTML = content;
-//   } catch (error) {
-//     console.error('Error loading HTML:', error);
-//   }
-// }
-
-// // Load header and footer into their respective placeholders
-// loadHTML('../pages/header.html', 'header-placeholder');
-// loadHTML('../pages/footer.html', 'footer-placeholder');
 document.addEventListener('DOMContentLoaded', async function () {
   const calendarEl = document.getElementById('calendar');
   const events = [];
@@ -24,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     assignments.forEach((assignment) => {
       events.push({
-        title: assignment.Title,
+        title: `${assignment.Name}<br>${assignment.Title}`,
         start: assignment.DueDate,
         color: assignment.Color, // Bootstrap primary color
       });
@@ -37,6 +22,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     initialView: 'dayGridMonth',
     themeSystem: 'bootstrap5',
     events,
+    eventContent: function (arg) {
+      return { html: arg.event.title }; // Render HTML content
+    },
   });
   calendar.render();
 });
@@ -70,5 +58,3 @@ function displaySelectedFiles(input, targetId) {
     fileList.appendChild(li);
   });
 }
-
-

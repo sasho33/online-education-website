@@ -1,29 +1,34 @@
 <?php
-include $_SERVER['DOCUMENT_ROOT'] . '/online-education/db/connection.php'; // Include DB connection
+
 
 // Fetch all news
-function getAllNews() {
+function getAllNews()
+{
     return select('news', [], 'NewsID, Title, Content, CreatedAt');
 }
 
 // Add a new news item
-function addNews($data) {
+function addNews($data)
+{
     return insert('news', $data);
 }
 
 // Delete a news item
-function deleteNews($newsID) {
+function deleteNews($newsID)
+{
     return delete('news', ['NewsID' => $newsID]);
 }
 
 // Fetch news by ID
-function getNewsByID($newsID) {
+function getNewsByID($newsID)
+{
     $result = select('news', ['NewsID' => $newsID]);
     return $result ? $result[0] : null;
 }
 
 // Update a news item
-function updateNews($data, $conditions) {
+function updateNews($data, $conditions)
+{
     return update('news', $data, $conditions);
 }
 
@@ -46,12 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['post_news'])) {
     if (empty($errors)) {
         $data = [
             'Title' => $title,
-            'Content' => $content
+            'Content' => $content,
         ];
 
-        if (isset($_POST['news_id'])) {
+        if (isset($_POST['news_id']) && !empty($_POST['news_id'])) {
             // Update news
-            $newsID = $_POST['news_id'];
+            $newsID = intval($_POST['news_id']);
             updateNews($data, ['NewsID' => $newsID]);
         } else {
             // Add new news
@@ -65,16 +70,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['post_news'])) {
     }
 }
 
+
 // Handle delete
 if (isset($_GET['action']) && $_GET['action'] === 'delete') {
-    $newsID = $_GET['id'];
-    deleteNews($newsID);
-
-    echo "<script>
-        window.location.href = '" . BASE_URL . "pages/teacher/news.php';
-    </script>";
+    $newsID = intval($_GET['id']);
+    if (deleteNews($newsID)) {
+    } else {
+        echo "<script>alert('Error deleting news. Please try again.');</script>";
+    }
+    echo "<script>window.location.href = '" . BASE_URL . "pages/teacher/news.php';</script>";
     exit();
 }
+
 
 // Handle edit
 if (isset($_GET['action']) && $_GET['action'] === 'edit') {
@@ -91,4 +98,3 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit') {
 
 // Fetch all news
 $newsList = getAllNews();
-?>

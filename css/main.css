@@ -266,7 +266,8 @@ header {
     height: auto;
     position: relative;
     /* border-right: none; */
-    max-width: 90%;
+    width: 60px;
+    text-align: center;
   }
   .sidebar ul {
     display: flex;
@@ -275,9 +276,17 @@ header {
   }
   .sidebar .nav-link {
     font-size: 1rem;
+    margin-right: 0px;
+    padding-right: 0px;
   }
 }
 
+@media (max-width: 576px) {
+  .sidebar {
+    /* border-right: none; */
+    width: 90%;
+  }
+}
 .edit-dropdown {
   white-space: nowrap;
 }
@@ -298,4 +307,27 @@ header {
 .student-menu-item:hover {
   background-color: #dcdbdb !important;
   scale: 1.01;
+}
+
+.subject-img {
+  display: block;
+  width: 80px !important;
+
+  margin: 0 auto;
+}
+
+.locked-tab {
+  background-color: #afafaf !important;
+}
+
+.locker {
+  position: absolute;
+
+  right: 50px;
+}
+
+.subject-list-img {
+  width: 25px;
+  height: 25px;
+  margin-right: 5px;
 }
